@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<meta>
+    <meta charset="utf-8"></meta>
+    <title>snake</title>
+    <style>
+        #map{
+            background-color: black;
+            width: 1500px;
+            height: 800px;
+            position: absolute;
+        }
+    </style>
+</header>
+<body>
+    <div id="map">
+
+    </div>
+    <script>
+        class snakeObj {
+            constructor(food) {
+                this.body = [ [3, 2, 'white' ], [2, 2, 'white'], [1, 2, 'black']]
+                this.direction = "novaule";
+                this.food = food;
+            }
+
+            // get direction() {
+            //     return this.direction;
+            // }
+            // set direction(code) {
+            //     switch (code) {
+            //         case "KeyW":
+            //             this.direction = "up";
+            //             break;
+            //         case "KeyS":
+            //             this.direction = "down";
+            //             break;
+            //         case "KeyA":
+            //             this.direction = "left";
+            //             break;
+            //         case "KeyD":
+            //             this.direction = "right";
+            //             break;
+            //         default:
+            //             break;
+            //     }
+            // }
+
+            display() {
+                for(let i = 0; i< this.body.length; i++) {
+                    let bodycell;
+                    bodycell = document.createElement("div");
+                    bodycell.style.width = 10 + "px";
+                    bodycell.style.height = 10 + "px";
+                    bodycell.style.position = "absolute";
+                    bodycell.style.backgroundColor = this.body[i][2];
+                    bodycell.style.left = this.body[i][0] * 10 + "px";
+                    bodycell.style.top = this.body[i][1] * 10 + "px";
+                    document.getElementById("map").appendChild(bodycell);
+                }
+            }
+            move() {
+                this.food.display();
+                for (let i = this.body.length-1; i > 0; i--) {
+                    this.body[i][0] = this.body[i-1][0];
+                    this.body[i][1] = this.body[i-1][1];
+                }
+                this.body[this.body.length-1][2] = "black";
+                switch (this.direction) {
+                    case "up":
+                        this.body[0][1] = this.body[0][1]-1;
+                        break;
+                    case "down":
+                        this.body[0][1] = this.body[0][1]+1;
+                        break;
+                    case "left":
+                        this.body[0][0] = this.body[0][0]-1;
+                        break;
+                    case "right":
+                        this.body[0][0] = this.body[0][0]+1;
+                        break;
+                }
+                this.display();
+                this.outOfBound();
+                this.eatFood();
+                this.touchBody();
+            }
+            outOfBound() {
+                let left = this.body[0][0];
+                if (left >= 150) {
+                    alert(`touch right bound`);
+                }
+                if (left <= -1) {
+                    alert(`touch left bound`);
+                }
+                let top = this.body[0][1];
+                if (top >= 80) {
+                    alert(`touch bottom bound`);
+                }
+                if (top <= -1) {
+                    alert(`touch top bound`);
+                }
+            }
+            eatFood() {
+                if ((this.body[0][0] == this.food.x) && (this.body[0][1] == this.food.y))  {
+                    this.food.generate();
+                    let x = this.body[this.body.length-1][0];
+                    let y = this.body[this.body.length-1][1];
+                    this.body[this.body.length-1][2] = "white";
+                    this.body.push([x,y, "black"]);
+                }
+            }
+            touchBody() {
+                for(let i = 2; i<this.body.length-1;i++) {
+                    if(this.body[0][0] == this.body[i][0] && this.body[0][1] == this.body[i][1]) {
+                        alert(`touch snake body`);
+                    }
+                }
+            }
+        };
+
+        class foodObj {
+            constructor() {
+                this.x = Math.floor(Math.random()* 149);
+                this.y = Math.floor(Math.random()* 79);
+            }
+            generate() {
+                this.x = Math.floor(Math.random()* 149);
+                this.y = Math.floor(Math.random()* 79);
+            }
+            display() {
+                let bodycell;
+                bodycell = document.createElement("div");
+                bodycell.style.width = 10 + "px";
+                bodycell.style.height = 10 + "px";
+                bodycell.style.position = "absolute";
+                bodycell.style.backgroundColor = "green";
+                bodycell.style.left = this.x * 10 + "px";
+                bodycell.style.top = this.y * 10 + "px";
+                document.getElementById("map").appendChild(bodycell);
+            }
+        };
+        
+        food = new foodObj();
+        snake = new snakeObj(food);
+        
+        // Add event listener on keydown
+        document.addEventListener('keydown', (event) => {
+            let code = event.code;
+            if(code == "KeyQ") {
+                alert(`${code} means pause this game`);
+            }
+
+            switch (code) {
+                case "KeyW":
+                    if (snake.direction != "down") {
+                        snake.direction = "up";
+                    }
+                    break;
+                case "KeyS":
+                    if (snake.direction != "up") {
+                        snake.direction = "down";
+                    }
+                    break;
+                case "KeyA":
+                    if (snake.direction != "right") {
+                        snake.direction = "left";
+                    }
+                    break;
+                case "KeyD":
+                    if (snake.direction != "left") {
+                        snake.direction = "right";
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }, false);
+        
+        timer = setInterval("snake.move()", 100)
+    </script>
+</body>
+</html>
